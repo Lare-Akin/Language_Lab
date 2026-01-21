@@ -1,0 +1,88 @@
+{
+  "Lazza": {
+    "password": "9c5d9159f5e1e306a338f6ad7052ff05b35e0e20b5ba8a9c7957d794737a40f8",
+    "name": "Lare Akin",
+    "role": "student",
+    "created_at": "2025-12-21T21:14:08.692806",
+    "last_login": "2026-01-21T16:28:23.185482",
+    "learning_profile": {
+      "total_quizzes": 9,
+      "total_correct": 41,
+      "total_attempts": 47,
+      "category_mastery": {},
+      "streak_days": 8,
+      "last_activity": null
+    }
+  },
+  "admin": {
+    "password": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+    "name": "Administrator",
+    "role": "administrator",
+    "created_at": "2025-12-23T22:41:35.449669",
+    "last_login": "2026-01-21T18:10:13.975269",
+    "learning_profile": {
+      "total_quizzes": 0,
+      "total_correct": 0,
+      "total_attempts": 0,
+      "streak_days": 0,
+      "last_activity": null
+    }
+  },
+  "Vanya": {
+    "password": "05dc3868841c75d46636b8f4b80814330b989face43419667e929c64a2b8f933",
+    "name": "Vanya D",
+    "role": "student",
+    "created_at": "2025-12-23T23:25:03.196213",
+    "last_login": "2026-01-21T12:40:14.122927",
+    "learning_profile": {
+      "total_quizzes": 8,
+      "total_correct": 40,
+      "total_attempts": 48,
+      "streak_days": 7,
+      "last_activity": null
+    }
+  },
+  "Happy": {
+    "password": "8bb0fd4f8262f0add06b6126319193155db53221810f03fde9f6d9876cad597c",
+    "name": "Happy Gil",
+    "role": "student",
+    "created_at": "2026-01-21T12:17:02.981696",
+    "last_login": "2026-01-21T12:39:15.563617",
+    "learning_profile": {
+      "total_quizzes": 2,
+      "total_correct": 14,
+      "total_attempts": 15,
+      "streak_days": 2,
+      "last_activity": null
+    }
+  },
+  "Vent": {
+    "password": "01692fae87248c9f63da764878e845e12eb5a4f77ae2c5eee61b0dfe898aebe2",
+    "name": "Vent BG",
+    "role": "student",
+    "created_at": "2026-01-21T13:39:20.218971",
+    "last_login": "2026-01-21T13:39:32.431749",
+    "learning_profile": {
+      "total_quizzes": 1,
+      "total_correct": 0,
+      "total_attempts": 3,
+      "streak_days": 0,
+      "last_activity": null
+    }
+  },
+  "John": {
+    "password": "370420e335f7a4d2ead6879991641792d5bdcde2db5d4fae3d976c2133732cda",
+    "name": "John Silver",
+    "role": "student",
+    "created_at": "2026-01-21T17:42:27.918627",
+    "last_login": "2026-01-21T18:08:45.835143",
+    "learning_profile": {
+      "total_quizzes": 0,
+      "total_correct": 0,
+      "total_attempts": 0,
+      "streak_days": 0,
+      "last_activity": null
+    },
+    "email": "AkinLare@Gmail.com"
+  }
+}

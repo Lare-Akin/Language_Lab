@@ -1,0 +1,327 @@
+{
+  "users": {
+    "Lazza": {
+      "quiz_history": [
+        {
+          "timestamp": "2025-12-23T23:18:19.163711",
+          "quiz_type": "dialogue_quiz",
+          "score": 3,
+          "total": 3,
+          "accuracy": 100.0,
+          "content_type": "Dialogues",
+          "time_spent": 0
+        },
+        {
+          "timestamp": "2025-12-23T23:20:04.732472",
+          "quiz_type": "comprehensive_quiz",
+          "score": 9,
+          "total": 10,
+          "accuracy": 90.0,
+          "content_type": "Mixed",
+          "time_spent": 0
+        },
+        {
+          "timestamp": "2026-01-10T01:08:20.543226",
+          "quiz_type": "comprehensive_quiz",
+          "score": 4,
+          "total": 5,
+          "accuracy": 80.0,
+          "content_type": "Mixed",
+          "time_spent": 0
+        },
+        {
+          "timestamp": "2026-01-10T01:11:31.047697",
+          "quiz_type": "comprehensive_quiz",
+          "score": 5,
+          "total": 5,
+          "accuracy": 100.0,
+          "content_type": "Words Only",
+          "time_spent": 0
+        },
+        {
+          "timestamp": "2026-01-10T01:13:18.610900",
+          "quiz_type": "comprehensive_quiz",
+          "score": 5,
+          "total": 5,
+          "accuracy": 100.0,
+          "content_type": "Phrases Only",
+          "time_spent": 0
+        },
+        {
+          "timestamp": "2026-01-10T01:17:16.739737",
+          "quiz_type": "dialogue_quiz",
+          "score": 3,
+          "total": 3,
+          "accuracy": 100.0,
+          "content_type": "Dialogues",
+          "time_spent": 0
+        },
+        {
+          "timestamp": "2026-01-21T12:13:56.914029",
+          "quiz_type": "dialogue_quiz",
+          "score": 3,
+          "total": 3,
+          "accuracy": 100.0,
+          "content_type": "Dialogues",
+          "time_spent": 0
+        }
+      ],
+      "category_performance": {
+        "Dialogues": {
+          "attempts": 3,
+          "correct": 9,
+          "total_questions": 9
+        },
+        "Mixed": {
+          "attempts": 2,
+          "correct": 13,
+          "total_questions": 15
+        },
+        "Words Only": {
+          "attempts": 1,
+          "correct": 5,
+          "total_questions": 5
+        },
+        "Phrases Only": {
+          "attempts": 1,
+          "correct": 5,
+          "total_questions": 5
+        }
+      },
+      "weekly_progress": [
+        {
+          "week_start": "2025-12-22",
+          "quizzes_taken": 2,
+          "total_score": 12,
+          "total_questions": 13
+        },
+        {
+          "week_start": "2026-01-05",
+          "quizzes_taken": 4,
+          "total_score": 17,
+          "total_questions": 18
+        },
+        {
+          "week_start": "2026-01-19",
+          "quizzes_taken": 1,
+          "total_score": 3,
+          "total_questions": 3
+        }
+      ],
+      "streak_data": {
+        "current_streak": 1,
+        "longest_streak": 1,
+        "last_activity": "2026-01-21"
+      }
+    },
+    "Vanya": {
+      "quiz_history": [
+        {
+          "timestamp": "2025-12-23T23:27:27.771759",
+          "quiz_type": "dialogue_quiz",
+          "score": 5,
+          "total": 5,
+          "accuracy": 100.0,
+          "content_type": "Dialogues",
+          "time_spent": 0
+        },
+        {
+          "timestamp": "2025-12-23T23:29:06.226255",
+          "quiz_type": "comprehensive_quiz",
+          "score": 7,
+          "total": 10,
+          "accuracy": 70.0,
+          "content_type": "Mixed",
+          "time_spent": 0
+        },
+        {
+          "timestamp": "2026-01-10T01:20:24.167349",
+          "quiz_type": "dialogue_quiz",
+          "score": 3,
+          "total": 3,
+          "accuracy": 100.0,
+          "content_type": "Dialogues",
+          "time_spent": 0
+        },
+        {
+          "timestamp": "2026-01-10T01:21:24.233515",
+          "quiz_type": "comprehensive_quiz",
+          "score": 4,
+          "total": 5,
+          "accuracy": 80.0,
+          "content_type": "Mixed",
+          "time_spent": 0
+        },
+        {
+          "timestamp": "2026-01-10T01:21:46.232852",
+          "quiz_type": "comprehensive_quiz",
+          "score": 4,
+          "total": 5,
+          "accuracy": 80.0,
+          "content_type": "Mixed",
+          "time_spent": 0
+        },
+        {
+          "timestamp": "2026-01-10T01:21:49.739924",
+          "quiz_type": "comprehensive_quiz",
+          "score": 4,
+          "total": 5,
+          "accuracy": 80.0,
+          "content_type": "Mixed",
+          "time_spent": 0
+        },
+        {
+          "timestamp": "2026-01-10T01:24:02.911725",
+          "quiz_type": "comprehensive_quiz",
+          "score": 8,
+          "total": 10,
+          "accuracy": 80.0,
+          "content_type": "Conversations Only",
+          "time_spent": 0
+        },
+        {
+          "timestamp": "2026-01-21T12:41:21.088070",
+          "quiz_type": "comprehensive_quiz",
+          "score": 5,
+          "total": 5,
+          "accuracy": 100.0,
+          "content_type": "Conversations Only",
+          "time_spent": 0
+        }
+      ],
+      "category_performance": {
+        "Dialogues": {
+          "attempts": 2,
+          "correct": 8,
+          "total_questions": 8
+        },
+        "Mixed": {
+          "attempts": 4,
+          "correct": 19,
+          "total_questions": 25
+        },
+        "Conversations Only": {
+          "attempts": 2,
+          "correct": 13,
+          "total_questions": 15
+        }
+      },
+      "weekly_progress": [
+        {
+          "week_start": "2025-12-22",
+          "quizzes_taken": 2,
+          "total_score": 12,
+          "total_questions": 15
+        },
+        {
+          "week_start": "2026-01-05",
+          "quizzes_taken": 5,
+          "total_score": 23,
+          "total_questions": 28
+        },
+        {
+          "week_start": "2026-01-19",
+          "quizzes_taken": 1,
+          "total_score": 5,
+          "total_questions": 5
+        }
+      ],
+      "streak_data": {
+        "current_streak": 1,
+        "longest_streak": 1,
+        "last_activity": "2026-01-21"
+      }
+    },
+    "Happy": {
+      "quiz_history": [
+        {
+          "timestamp": "2026-01-21T12:18:16.108553",
+          "quiz_type": "comprehensive_quiz",
+          "score": 4,
+          "total": 5,
+          "accuracy": 80.0,
+          "content_type": "Mixed",
+          "time_spent": 0
+        },
+        {
+          "timestamp": "2026-01-21T12:19:49.113984",
+          "quiz_type": "comprehensive_quiz",
+          "score": 10,
+          "total": 10,
+          "accuracy": 100.0,
+          "content_type": "Phrases Only",
+          "time_spent": 0
+        }
+      ],
+      "category_performance": {
+        "Mixed": {
+          "attempts": 1,
+          "correct": 4,
+          "total_questions": 5
+        },
+        "Phrases Only": {
+          "attempts": 1,
+          "correct": 10,
+          "total_questions": 10
+        }
+      },
+      "weekly_progress": [
+        {
+          "week_start": "2026-01-19",
+          "quizzes_taken": 2,
+          "total_score": 14,
+          "total_questions": 15
+        }
+      ],
+      "streak_data": {
+        "current_streak": 1,
+        "longest_streak": 1,
+        "last_activity": "2026-01-21"
+      }
+    },
+    "Vent": {
+      "quiz_history": [
+        {
+          "timestamp": "2026-01-21T13:39:59.565222",
+          "quiz_type": "dialogue_quiz",
+          "score": 0,
+          "total": 3,
+          "accuracy": 0.0,
+          "content_type": "Dialogues",
+          "time_spent": 0
+        }
+      ],
+      "category_performance": {
+        "Dialogues": {
+          "attempts": 1,
+          "correct": 0,
+          "total_questions": 3
+        }
+      },
+      "weekly_progress": [
+        {
+          "week_start": "2026-01-19",
+          "quizzes_taken": 1,
+          "total_score": 0,
+          "total_questions": 3
+        }
+      ],
+      "streak_data": {
+        "current_streak": 1,
+        "longest_streak": 1,
+        "last_activity": "2026-01-21"
+      }
+    },
+    "John": {
+      "quiz_history": [],
+      "category_performance": {},
+      "weekly_progress": [],
+      "streak_data": {
+        "current_streak": 0,
+        "longest_streak": 0,
+        "last_activity": null
+      }
+    }
+  },
+  "analytics": {}
+}
