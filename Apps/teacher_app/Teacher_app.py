@@ -792,12 +792,6 @@ def practice_words_section():
                 st.session_state[browser_key] = idx + 1
                 st.rerun()
         
-        with col_finish:
-            if st.button("Finish Practice", type="primary", use_container_width=True):
-                st.session_state.practice_mode = False
-                st.success("Practice session completed!")
-                st.rerun()
-        
         # Progress
         progress = (st.session_state.practice_index + 1) / len(st.session_state.practice_items)
         st.progress(progress)
@@ -2889,3 +2883,4 @@ if __name__ == "__main__":
     ensure_default_admin()
 
     main()
+
