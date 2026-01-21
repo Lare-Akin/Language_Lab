@@ -15,8 +15,7 @@ import plotly.express as px
 # CONFIG & PATHS (SHARED)
 # =========================================
 
-BASE_DIR = Path(__file__).parent.resolve()
-DATA_DIR = BASE_DIR / "data"
+DATA_DIR = Path(__file__).parents[2] / "data"
 
 LEARNING_DB_PATH = DATA_DIR / "Learning_Resource_Database.csv"
 USER_PROFILES_PATH = DATA_DIR / "user_profiles.json"
@@ -1390,4 +1389,5 @@ if __name__ == "__main__":
     init_user_profiles()
     init_progress_data()
     ensure_default_admin()
+
     main()
