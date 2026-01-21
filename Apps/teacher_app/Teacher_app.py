@@ -668,7 +668,7 @@ def practice_words_section():
         return
     
     # Filter options
-    categories = df_words["Category"].dropna().unique().tolist()
+    categories = df_words["Category"].unique().tolist()
     selected_category = st.selectbox("Filter by Category:", ["All"] + categories)
     
     # Filter words
@@ -689,12 +689,12 @@ def practice_words_section():
             st.session_state.practice_index = 0
             st.rerun()
     with col2:
-        if st.button("📊 Browse Words One by One", use_container_width=True):
+        if st.button("📊 View All Words", use_container_width=True):
             st.session_state.practice_mode = False
             st.rerun()
     
-    # PRACTICE MODE (unchanged behaviour)
     if st.session_state.practice_mode and st.session_state.practice_items:
+        # Practice session
         item = st.session_state.practice_items[st.session_state.practice_index]
         
         col_left, col_right = st.columns(2)
@@ -706,6 +706,7 @@ def practice_words_section():
             if pd.notna(item.get('Pronunciation')):
                 st.write(f"*({item['Pronunciation']})*")
             
+            # Audio button
             audio_path = tts_audio(item['Bulgarian'])
             if audio_path:
                 with open(audio_path, 'rb') as f:
@@ -725,6 +726,7 @@ def practice_words_section():
                 if pd.notna(item.get('Grammar_Notes')):
                     st.info(f"📝 Note: {item['Grammar_Notes']}")
         
+        # Navigation
         st.markdown("---")
         col_prev, col_next, col_finish = st.columns([1, 1, 2])
         
@@ -742,54 +744,6 @@ def practice_words_section():
             if st.button("Finish Practice", type="primary", use_container_width=True):
                 st.session_state.practice_mode = False
                 st.success("Practice session completed!")
-                st.rerun()
-        
-        progress = (st.session_state.practice_index + 1) / len(st.session_state.practice_items)
-        st.progress(progress)
-        st.caption(f"Word {st.session_state.practice_index + 1} of {len(st.session_state.practice_items)}")
-    
-    # BROWSER MODE (replaces giant list)
-    else:
-        st.subheader(f"📚 Word Browser ({len(display_words)} words)")
-        
-        browser_key = f"word_browser_{selected_category}"
-        if browser_key not in st.session_state:
-            st.session_state[browser_key] = 0
-        
-        idx = st.session_state[browser_key]
-        idx = max(0, min(idx, len(display_words) - 1))
-        st.session_state[browser_key] = idx
-        
-        row = display_words.iloc[idx]
-        
-        st.markdown("---")
-        col1, col2 = st.columns(2)
-        with col1:
-            st.write(f"**Bulgarian:** {row['Bulgarian']}")
-            if pd.notna(row.get('Pronunciation')):
-                st.write(f"**Pronunciation:** {row['Pronunciation']}")
-        with col2:
-            st.write(f"**English:** {row['English']}")
-            if pd.notna(row.get('Grammar_Notes')):
-                st.write(f"**Notes:** {row['Grammar_Notes']}")
-        
-        audio_path = tts_audio(row['Bulgarian'])
-        if audio_path:
-            with open(audio_path, 'rb') as f:
-                audio_bytes = f.read()
-            st.audio(audio_bytes, format='audio/mp3')
-        
-        st.markdown("---")
-        c1, c2, c3 = st.columns([1, 2, 1])
-        with c1:
-            if st.button("◀ Previous word", disabled=idx == 0, key=f"{browser_key}_prev"):
-                st.session_state[browser_key] = idx - 1
-                st.rerun()
-        with c2:
-            st.markdown(f"**{idx + 1} / {len(display_words)}**")
-        with c3:
-            if st.button("Next word ▶", disabled=idx >= len(display_words) - 1, key=f"{browser_key}_next"):
-                st.session_state[browser_key] = idx + 1
                 st.rerun()
         
         # Progress
@@ -828,9 +782,11 @@ def practice_phrases_section():
         st.info("No phrases available. Add some content first!")
         return
     
-    categories = df_phrases["Category"].dropna().unique().tolist()
+    # Filter options
+    categories = df_phrases["Category"].unique().tolist()
     selected_category = st.selectbox("Filter by Category:", ["All"] + categories, key="phrase_cat")
     
+    # Filter phrases
     display_phrases = df_phrases.copy()
     if selected_category != "All":
         display_phrases = display_phrases[display_phrases["Category"] == selected_category]
@@ -839,6 +795,7 @@ def practice_phrases_section():
         st.info("No phrases in selected category.")
         return
     
+    # Practice mode toggle
     col1, col2 = st.columns(2)
     with col1:
         if st.button("🎯 Start Phrase Practice", use_container_width=True, key="phrase_practice"):
@@ -847,11 +804,12 @@ def practice_phrases_section():
             st.session_state.practice_index = 0
             st.rerun()
     with col2:
-        if st.button("📊 Browse Phrases One by One", use_container_width=True, key="phrase_view"):
+        if st.button("📊 View All Phrases", use_container_width=True, key="phrase_view"):
             st.session_state.practice_mode = False
             st.rerun()
     
     if st.session_state.practice_mode and st.session_state.practice_items:
+        # Practice session
         item = st.session_state.practice_items[st.session_state.practice_index]
         
         st.subheader("Bulgarian Phrase")
@@ -860,22 +818,27 @@ def practice_phrases_section():
         if pd.notna(item.get('Pronunciation')):
             st.write(f"*({item['Pronunciation']})*")
         
+        # Audio button
         audio_path = tts_audio(item['Bulgarian'])
         if audio_path:
             with open(audio_path, 'rb') as f:
                 audio_bytes = f.read()
             st.audio(audio_bytes, format='audio/mp3')
         
-        answer = st.text_input("Type the English translation:", key="phrase_answer")
-        if st.button("Check Answer", use_container_width=True, key="phrase_check"):
-            if answer.lower().strip() == item['English'].lower().strip():
-                st.success("✅ Correct!")
-            else:
-                st.error(f"❌ Correct answer: {item['English']}")
-            
-            if pd.notna(item.get('Grammar_Notes')):
-                st.info(f"📝 Note: {item['Grammar_Notes']}")
+        st.markdown("---")
         
+        # Interactive learning
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            if st.button("Show Translation", key="show_translation"):
+                st.info(f"**English:** {item['English']}")
+        
+        with col2:
+            if st.button("Show Notes", key="show_notes") and pd.notna(item.get('Grammar_Notes')):
+                st.info(f"**Notes:** {item['Grammar_Notes']}")
+        
+        # Navigation
         st.markdown("---")
         col_prev, col_next, col_finish = st.columns([1, 1, 2])
         
@@ -887,56 +850,6 @@ def practice_phrases_section():
         with col_next:
             if st.button("Next ➡️", disabled=st.session_state.practice_index >= len(st.session_state.practice_items) - 1, key="phrase_next"):
                 st.session_state.practice_index += 1
-                st.rerun()
-        
-        with col_finish:
-            if st.button("Finish Practice", type="primary", use_container_width=True, key="phrase_finish"):
-                st.session_state.practice_mode = False
-                st.success("Phrase practice session completed!")
-                st.rerun()
-        
-        progress = (st.session_state.practice_index + 1) / len(st.session_state.practice_items)
-        st.progress(progress)
-        st.caption(f"Phrase {st.session_state.practice_index + 1} of {len(st.session_state.practice_items)}")
-    
-    else:
-        st.subheader(f"📚 Phrase Browser ({len(display_phrases)} phrases)")
-        
-        browser_key = f"phrase_browser_{selected_category}"
-        if browser_key not in st.session_state:
-            st.session_state[browser_key] = 0
-        
-        idx = st.session_state[browser_key]
-        idx = max(0, min(idx, len(display_phrases) - 1))
-        st.session_state[browser_key] = idx
-        
-        row = display_phrases.iloc[idx]
-        
-        st.markdown("---")
-        st.write(f"**Bulgarian:** {row['Bulgarian']}")
-        if pd.notna(row.get('Pronunciation')):
-            st.write(f"**Pronunciation:** {row['Pronunciation']}")
-        st.write(f"**English:** {row['English']}")
-        if pd.notna(row.get('Grammar_Notes')):
-            st.write(f"**Notes:** {row['Grammar_Notes']}")
-        
-        audio_path = tts_audio(row['Bulgarian'])
-        if audio_path:
-            with open(audio_path, 'rb') as f:
-                audio_bytes = f.read()
-            st.audio(audio_bytes, format='audio/mp3')
-        
-        st.markdown("---")
-        c1, c2, c3 = st.columns([1, 2, 1])
-        with c1:
-            if st.button("◀ Previous phrase", disabled=idx == 0, key=f"{browser_key}_prev"):
-                st.session_state[browser_key] = idx - 1
-                st.rerun()
-        with c2:
-            st.markdown(f"**{idx + 1} / {len(display_phrases)}**")
-        with c3:
-            if st.button("Next phrase ▶", disabled=idx >= len(display_phrases) - 1, key=f"{browser_key}_next"):
-                st.session_state[browser_key] = idx + 1
                 st.rerun()
         
         with col_finish:
@@ -981,116 +894,103 @@ def practice_conversations_section():
         st.info("No conversations available. Add some content first!")
         return
     
-    categories = df_convo["Category"].dropna().unique().tolist()
-    selected_category = st.selectbox("Filter by Category:", ["All"] + categories, key="convo_cat")
+    # Select a conversation
+    conversation_options = []
+    for idx, row in df_convo.iterrows():
+        preview = row['Bulgarian'][:50] + "..." if len(row['Bulgarian']) > 50 else row['Bulgarian']
+        conversation_options.append((idx, preview))
     
-    display_convo = df_convo.copy()
-    if selected_category != "All":
-        display_convo = display_convo[display_convo["Category"] == selected_category]
+    selected_idx = st.selectbox(
+        "Choose a conversation:",
+        range(len(df_convo)),
+        format_func=lambda x: f"{df_convo.iloc[x]['Category']}: {df_convo.iloc[x]['Bulgarian'][:50]}..."
+    )
     
-    if display_convo.empty:
-        st.info("No conversations in selected category.")
-        return
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("🎯 Start Conversation Practice", use_container_width=True, key="convo_practice"):
-            st.session_state.practice_mode = True
-            st.session_state.practice_items = display_convo.to_dict('records')
-            st.session_state.practice_index = 0
-            st.rerun()
-    with col2:
-        if st.button("📊 Browse Conversations One by One", use_container_width=True, key="convo_view"):
-            st.session_state.practice_mode = False
-            st.rerun()
-    
-    # PRACTICE MODE
-    if st.session_state.practice_mode and st.session_state.practice_items:
-        item = st.session_state.practice_items[st.session_state.practice_index]
+    if selected_idx is not None:
+        conversation = df_convo.iloc[selected_idx]
         
-        st.subheader("Bulgarian Conversation Line")
-        st.markdown(f"### {item['Bulgarian']}")
+        st.subheader("Conversation")
+        st.markdown(f"### {conversation['Bulgarian']}")
         
-        if pd.notna(item.get('Pronunciation')):
-            st.write(f"*({item['Pronunciation']})*")
+        if pd.notna(conversation.get('Pronunciation')):
+            st.write(f"*({conversation['Pronunciation']})*")
         
-        audio_path = tts_audio(item['Bulgarian'])
+        # Audio button
+        audio_path = tts_audio(conversation['Bulgarian'])
         if audio_path:
             with open(audio_path, 'rb') as f:
-                st.audio(f.read(), format='audio/mp3')
+                audio_bytes = f.read()
+            st.audio(audio_bytes, format='audio/mp3')
         
-        answer = st.text_input("Type the English translation:", key="convo_answer")
-        if st.button("Check Answer", use_container_width=True, key="convo_check"):
-            if answer.lower().strip() == item['English'].lower().strip():
-                st.success("✅ Correct!")
-            else:
-                st.error(f"❌ Correct answer: {item['English']}")
+        st.markdown("---")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.info(f"**English:**\n{conversation['English']}")
+        
+        with col2:
+            if pd.notna(conversation.get('Grammar_Notes')):
+                st.info(f"**Notes:**\n{conversation['Grammar_Notes']}")
+        
+        # Practice mode
+        st.markdown("---")
+        st.subheader("Practice This Conversation")
+        
+        if st.button("🎤 Practice Speaking", key="practice_speaking"):
+            st.session_state.dialog_mode = True
+            st.session_state.dialog_lines = conversation['Bulgarian'].split('. ')
+            st.session_state.dialog_current = 0
+            st.rerun()
+        
+        if st.session_state.dialog_mode and st.session_state.dialog_lines:
+            line = st.session_state.dialog_lines[st.session_state.dialog_current]
             
-            if pd.notna(item.get('Grammar_Notes')):
-                st.info(f"📝 Note: {item['Grammar_Notes']}")
-        
-        st.markdown("---")
-        col_prev, col_next, col_finish = st.columns([1, 1, 2])
-        
-        with col_prev:
-            if st.button("⬅️ Previous", disabled=st.session_state.practice_index == 0, key="convo_prev"):
-                st.session_state.practice_index -= 1
-                st.rerun()
-        
-        with col_next:
-            if st.button("Next ➡️", disabled=st.session_state.practice_index >= len(st.session_state.practice_items) - 1, key="convo_next"):
-                st.session_state.practice_index += 1
-                st.rerun()
-        
-        with col_finish:
-            if st.button("Finish Practice", type="primary", use_container_width=True, key="convo_finish"):
-                st.session_state.practice_mode = False
-                st.success("Conversation practice session completed!")
-                st.rerun()
-        
-        progress = (st.session_state.practice_index + 1) / len(st.session_state.practice_items)
-        st.progress(progress)
-        st.caption(f"Conversation {st.session_state.practice_index + 1} of {len(st.session_state.practice_items)}")
-    
-    # BROWSER MODE
-    else:
-        st.subheader(f"📚 Conversation Browser ({len(display_convo)} items)")
-        
-        browser_key = f"convo_browser_{selected_category}"
-        if browser_key not in st.session_state:
-            st.session_state[browser_key] = 0
-        
-        idx = st.session_state[browser_key]
-        idx = max(0, min(idx, len(display_convo) - 1))
-        st.session_state[browser_key] = idx
-        
-        row = display_convo.iloc[idx]
-        
-        st.markdown("---")
-        st.write(f"**Bulgarian:** {row['Bulgarian']}")
-        if pd.notna(row.get('Pronunciation')):
-            st.write(f"**Pronunciation:** {row['Pronunciation']}")
-        st.write(f"**English:** {row['English']}")
-        if pd.notna(row.get('Grammar_Notes')):
-            st.write(f"**Notes:** {row['Grammar_Notes']}")
-        
-        audio_path = tts_audio(row['Bulgarian'])
-        if audio_path:
-            with open(audio_path, 'rb') as f:
-                st.audio(f.read(), format='audio/mp3')
-        
-        st.markdown("---")
-        c1, c2, c3 = st.columns([1, 2, 1])
-        with c1:
-            if st.button("◀ Previous", disabled=idx == 0, key=f"{browser_key}_prev"):
-                st.session_state[browser_key] = idx - 1
-                st.rerun()
-        with c2:
-            st.markdown(f"**{idx + 1} / {len(display_convo)}**")
-        with c3:
-            if st.button("Next ▶", disabled=idx >= len(display_convo) - 1, key=f"{browser_key}_next"):
-                st.session_state[browser_key] = idx + 1
-                st.rerun()
+            st.markdown("---")
+            st.subheader(f"Line {st.session_state.dialog_current + 1} of {len(st.session_state.dialog_lines)}")
+            
+            st.write(f"**Bulgarian:** {line}")
+            
+            # Find corresponding English part
+            eng_lines = conversation['English'].split('. ')
+            eng_line = eng_lines[st.session_state.dialog_current] if st.session_state.dialog_current < len(eng_lines) else ""
+            
+            col_reveal, col_audio = st.columns(2)
+            with col_reveal:
+                if st.button("Reveal Translation", key=f"reveal_{st.session_state.dialog_current}"):
+                    st.session_state.dialog_showing_answer = True
+            
+            with col_audio:
+                line_audio = tts_audio(line)
+                if line_audio:
+                    with open(line_audio, 'rb') as f:
+                        audio_bytes = f.read()
+                    st.audio(audio_bytes, format='audio/mp3')
+            
+            if st.session_state.dialog_showing_answer:
+                st.success(f"**English:** {eng_line}")
+            
+            # Navigation
+            col_prev, col_next, col_done = st.columns([1, 1, 2])
+            
+            with col_prev:
+                if st.button("⬅️ Previous", disabled=st.session_state.dialog_current == 0, key="dialog_prev"):
+                    st.session_state.dialog_current -= 1
+                    st.session_state.dialog_showing_answer = False
+                    st.rerun()
+            
+            with col_next:
+                if st.button("Next ➡️", disabled=st.session_state.dialog_current >= len(st.session_state.dialog_lines) - 1, key="dialog_next"):
+                    st.session_state.dialog_current += 1
+                    st.session_state.dialog_showing_answer = False
+                    st.rerun()
+            
+            with col_done:
+                if st.button("Finish Practice", type="primary", key="dialog_finish"):
+                    st.session_state.dialog_mode = False
+                    st.session_state.dialog_showing_answer = False
+                    st.success("Conversation practice completed!")
+                    st.rerun()
 
 def practice_dialogues_section():
     """Dialogue practice section for teachers."""
@@ -1100,116 +1000,48 @@ def practice_dialogues_section():
         st.info("No dialogues available. Add some content first!")
         return
     
-    categories = df_dialogues["Category"].dropna().unique().tolist()
-    selected_category = st.selectbox("Filter by Category:", ["All"] + categories, key="dialog_cat")
+    # Select a dialogue
+    dialogue_options = []
+    for idx, row in df_dialogues.iterrows():
+        preview = row['Bulgarian'][:50] + "..." if len(row['Bulgarian']) > 50 else row['Bulgarian']
+        dialogue_options.append((idx, preview))
     
-    display_dialogues = df_dialogues.copy()
-    if selected_category != "All":
-        display_dialogues = display_dialogues[display_dialogues["Category"] == selected_category]
+    selected_idx = st.selectbox(
+        "Choose a dialogue:",
+        range(len(df_dialogues)),
+        format_func=lambda x: f"{df_dialogues.iloc[x]['Category']}: {df_dialogues.iloc[x]['Bulgarian'][:50]}..."
+    )
     
-    if display_dialogues.empty:
-        st.info("No dialogues in selected category.")
-        return
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("🎯 Start Dialogue Practice", use_container_width=True, key="dialog_practice"):
-            st.session_state.practice_mode = True
-            st.session_state.practice_items = display_dialogues.to_dict('records')
-            st.session_state.practice_index = 0
-            st.rerun()
-    with col2:
-        if st.button("📊 Browse Dialogues One by One", use_container_width=True, key="dialog_view"):
-            st.session_state.practice_mode = False
-            st.rerun()
-    
-    # PRACTICE MODE
-    if st.session_state.practice_mode and st.session_state.practice_items:
-        item = st.session_state.practice_items[st.session_state.practice_index]
+    if selected_idx is not None:
+        dialogue = df_dialogues.iloc[selected_idx]
         
-        st.subheader("Dialogue Line")
-        st.markdown(f"### {item['Bulgarian']}")
+        st.subheader("Dialogue")
         
-        if pd.notna(item.get('Pronunciation')):
-            st.write(f"*({item['Pronunciation']})*")
+        # Format dialogue with speaker identification
+        bg_text = dialogue['Bulgarian']
+        en_text = dialogue['English']
         
-        audio_path = tts_audio(item['Bulgarian'])
-        if audio_path:
-            with open(audio_path, 'rb') as f:
-                st.audio(f.read(), format='audio/mp3')
+        # Split by lines if there are line breaks
+        bg_lines = bg_text.split('\n') if '\n' in bg_text else [bg_text]
+        en_lines = en_text.split('\n') if '\n' in en_text else [en_text]
         
-        answer = st.text_input("Type the English translation:", key="dialog_answer")
-        if st.button("Check Answer", use_container_width=True, key="dialog_check"):
-            if answer.lower().strip() == item['English'].lower().strip():
-                st.success("✅ Correct!")
-            else:
-                st.error(f"❌ Correct answer: {item['English']}")
-            
-            if pd.notna(item.get('Grammar_Notes')):
-                st.info(f"📝 Note: {item['Grammar_Notes']}")
+        for i, (bg_line, en_line) in enumerate(zip(bg_lines, en_lines)):
+            with st.expander(f"Line {i+1}", expanded=i==0):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.write(f"**Bulgarian:**\n{bg_line}")
+                with col2:
+                    st.write(f"**English:**\n{en_line}")
+                
+                # Audio for each line
+                line_audio = tts_audio(clean_dialogue_text(bg_line))
+                if line_audio:
+                    with open(line_audio, 'rb') as f:
+                        audio_bytes = f.read()
+                    st.audio(audio_bytes, format='audio/mp3')
         
-        st.markdown("---")
-        col_prev, col_next, col_finish = st.columns([1, 1, 2])
-        
-        with col_prev:
-            if st.button("⬅️ Previous", disabled=st.session_state.practice_index == 0, key="dialog_prev"):
-                st.session_state.practice_index -= 1
-                st.rerun()
-        
-        with col_next:
-            if st.button("Next ➡️", disabled=st.session_state.practice_index >= len(st.session_state.practice_items) - 1, key="dialog_next"):
-                st.session_state.practice_index += 1
-                st.rerun()
-        
-        with col_finish:
-            if st.button("Finish Practice", type="primary", use_container_width=True, key="dialog_finish"):
-                st.session_state.practice_mode = False
-                st.success("Dialogue practice session completed!")
-                st.rerun()
-        
-        progress = (st.session_state.practice_index + 1) / len(st.session_state.practice_items)
-        st.progress(progress)
-        st.caption(f"Dialogue {st.session_state.practice_index + 1} of {len(st.session_state.practice_items)}")
-    
-    # BROWSER MODE
-    else:
-        st.subheader(f"📚 Dialogue Browser ({len(display_dialogues)} items)")
-        
-        browser_key = f"dialog_browser_{selected_category}"
-        if browser_key not in st.session_state:
-            st.session_state[browser_key] = 0
-        
-        idx = st.session_state[browser_key]
-        idx = max(0, min(idx, len(display_dialogues) - 1))
-        st.session_state[browser_key] = idx
-        
-        row = display_dialogues.iloc[idx]
-        
-        st.markdown("---")
-        st.write(f"**Bulgarian:** {row['Bulgarian']}")
-        if pd.notna(row.get('Pronunciation')):
-            st.write(f"**Pronunciation:** {row['Pronunciation']}")
-        st.write(f"**English:** {row['English']}")
-        if pd.notna(row.get('Grammar_Notes')):
-            st.write(f"**Notes:** {row['Grammar_Notes']}")
-        
-        audio_path = tts_audio(row['Bulgarian'])
-        if audio_path:
-            with open(audio_path, 'rb') as f:
-                st.audio(f.read(), format='audio/mp3')
-        
-        st.markdown("---")
-        c1, c2, c3 = st.columns([1, 2, 1])
-        with c1:
-            if st.button("◀ Previous", disabled=idx == 0, key=f"{browser_key}_prev"):
-                st.session_state[browser_key] = idx - 1
-                st.rerun()
-        with c2:
-            st.markdown(f"**{idx + 1} / {len(display_dialogues)}**")
-        with c3:
-            if st.button("Next ▶", disabled=idx >= len(display_dialogues) - 1, key=f"{browser_key}_next"):
-                st.session_state[browser_key] = idx + 1
-                st.rerun()
+        if pd.notna(dialogue.get('Grammar_Notes')):
+            st.info(f"**Notes:** {dialogue['Grammar_Notes']}")
 
 # =========================================
 # QUIZ SECTIONS (TEACHER CAN USE LIKE STUDENT)
@@ -2883,4 +2715,3 @@ if __name__ == "__main__":
     ensure_default_admin()
 
     main()
-
