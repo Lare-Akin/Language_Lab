@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulgarian Language Learning Lab Delivered by Laré</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 25%, #3949ab 50%, #5c6bc0 75%, #7986cb 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .header {
+            margin-bottom: 60px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #ffeb3b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 3rem;
+            animation: pulse 2s infinite;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to right, #ffeb3b, #ff9800);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #e8eaf6;
+            font-weight: 300;
+        }
+
+        .welcome-bulgarian {
+            font-size: 2.2rem;
+            color: #ffeb3b;
+            margin-bottom: 40px;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 2s ease-out;
+        }
+
+        .user-select {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 50px;
+            flex-wrap: wrap;
+        }
+
+        .user-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px 30px;
+            width: 350px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-card:hover {
+            transform: translateY(-15px) scale(1.05);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #ffeb3b;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .user-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: 0.5s;
+        }
+
+        .user-card:hover::before {
+            left: 100%;
+        }
+
+        .user-icon {
+            font-size: 5rem;
+            margin-bottom: 25px;
+            color: #ffeb3b;
+        }
+
+        .user-title {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .user-description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #e8eaf6;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff9800, #ffeb3b);
+            color: #1a237e;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 152, 0, 0.6);
+            background: linear-gradient(45deg, #ffb74d, #fff176);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .language-flag {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.8rem;
+        }
+
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 80px;
+            flex-wrap: wrap;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            width: 250px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #ffeb3b;
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .feature-desc {
+            font-size: 1rem;
+            color: #c5cae9;
+            line-height: 1.5;
+        }
+
+        footer {
+            margin-top: 80px;
+            text-align: center;
+            color: #c5cae9;
+            font-size: 1rem;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+        }
+
+        .copyright {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #9fa8da;
+        }
+
+        .cyrillic-text {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.2em;
+            letter-spacing: 1px;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .user-select {
+                flex-direction: column;
+                align-items: center;
+                gap: 30px;
+            }
+            
+            .user-card {
+                width: 100%;
+                max-width: 400px;
+            }
+            
+            h1 {
+                font-size: 2.8rem;
+            }
+            
+            .welcome-bulgarian {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .subtitle {
+                font-size: 1.4rem;
+            }
+            
+            .welcome-bulgarian {
+                font-size: 1.5rem;
+            }
+            
+            .user-title {
+                font-size: 1.8rem;
+            }
+            
+            .user-icon {
+                font-size: 4rem;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .logo-icon {
+                font-size: 2.5rem;
+            }
+        }
+
+        /* Loading animation */
+        .loader {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 35, 126, 0.9);
+            z-index: 1000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loader-spinner {
+            width: 80px;
+            height: 80px;
+            border: 8px solid rgba(255, 255, 255, 0.1);
+            border-top: 8px solid #ffeb3b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 30px;
+        }
+
+        .loader-text {
+            font-size: 1.5rem;
+            color: #ffeb3b;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loader" id="loader">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">Зареждане... | Loading...</div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+            </div>
+            <h1>Bulgarian Language Learning Lab</h1>
+            <div class="subtitle">Master Bulgarian with Interactive Learning</div>
+            <div class="welcome-bulgarian">
+                <span class="cyrillic-text">Добре дошли в Лабораторията за български език!</span>
+            </div>
+        </header>
+
+        <main>
+            <div class="user-select">
+                <!-- Student Card -->
+                <div class="user-card" id="student-card">
+                    <div class="language-flag">🇧🇬</div>
+                    <i class="fas fa-graduation-cap user-icon"></i>
+                    <h2 class="user-title">Student</h2>
+                    <p class="user-description">
+                        Access interactive learning modules, practice vocabulary, take quizzes, 
+                        track your progress, and master Bulgarian at your own pace.
+                    </p>
+                    <button class="btn" onclick="redirectToStudent()">
+                        <i class="fas fa-sign-in-alt"></i> Enter as Student
+                    </button>
+                </div>
+
+                <!-- Teacher Card -->
+                <div class="user-card" id="teacher-card">
+                    <div class="language-flag">👨‍🏫</div>
+                    <i class="fas fa-chalkboard-teacher user-icon"></i>
+                    <h2 class="user-title">Teacher/Admin</h2>
+                    <p class="user-description">
+                        Manage content, monitor student progress, create quizzes, 
+                        generate reports, and administer the learning platform.
+                    </p>
+                    <button class="btn" onclick="redirectToTeacher()">
+                        <i class="fas fa-sign-in-alt"></i> Enter as Teacher
+                    </button>
+                </div>
+            </div>
+
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-book-open feature-icon"></i>
+                    <h3 class="feature-title">Interactive Lessons</h3>
+                    <p class="feature-desc">Learn with engaging multimedia content and real-life dialogues</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-microphone-alt feature-icon"></i>
+                    <h3 class="feature-title">Pronunciation Practice</h3>
+                    <p class="feature-desc">Improve your accent with audio exercises and voice recognition</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-chart-line feature-icon"></i>
+                    <h3 class="feature-title">Progress Tracking</h3>
+                    <p class="feature-desc">Monitor your improvement with detailed analytics and reports</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-gamepad feature-icon"></i>
+                    <h3 class="feature-title">Gamified Learning</h3>
+                    <p class="feature-desc">Earn badges and compete with friends in language challenges</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>© 2023 Laré's Bulgarian Language Learning Lab. All rights reserved.</p>
+            <p id="time-display" style="margin-top: 10px; font-size: 0.9rem; margin-bottom: 5px;">
+                <!-- Time will be displayed here -->
+            </p>
+            <p class="copyright">Developed with ❤️ by Laré Akin • Supports Cyrillic Script</p>
+            <p style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;">
+                <i class="fas fa-info-circle"></i> 
+                Compatible with modern browsers. Recommended: Chrome, Firefox, Edge
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Show loading animation
+        function showLoader() {
+            document.getElementById('loader').style.display = 'flex';
+        }
+
+        // Redirect to Student app (Streamlit)
+        function redirectToStudent() {
+            showLoader();
+            // In production, replace with your actual Streamlit student app URL
+            window.location.href = "http://localhost:8501?role=student";
+            // For deployment: window.location.href = "https://your-streamlit-app.streamlit.app?role=student";
+        }
+
+        // Redirect to Teacher app (Streamlit)
+        function redirectToTeacher() {
+            showLoader();
+            // In production, replace with your actual Streamlit teacher app URL
+            window.location.href = "http://localhost:8502?role=teacher";
+            // For deployment: window.location.href = "https://your-streamlit-app.streamlit.app?role=teacher";
+        }
+
+        // Card hover effects with sound (optional)
+        const cards = document.querySelectorAll('.user-card');
+        
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                // Optional: Add hover sound effect
+                // const hoverSound = new Audio('hover-sound.mp3');
+                // hoverSound.volume = 0.3;
+                // hoverSound.play();
+            });
+            
+            card.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('btn')) {
+                    const button = card.querySelector('.btn');
+                    button.click();
+                }
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '1' || e.key === 's' || e.key === 'S') {
+                document.getElementById('student-card').querySelector('.btn').click();
+            }
+            if (e.key === '2' || e.key === 't' || e.key === 'T') {
+                document.getElementById('teacher-card').querySelector('.btn').click();
+            }
+        });
+
+        // Add some dynamic text effects
+        document.addEventListener('DOMContentLoaded', () => {
+            const welcomeText = document.querySelector('.welcome-bulgarian');
+            
+            // Optional: Add typing effect
+            welcomeText.style.opacity = '0';
+            setTimeout(() => {
+                welcomeText.style.transition = 'opacity 1s ease';
+                welcomeText.style.opacity = '1';
+            }, 1000);
+            
+            // Display current time in Bulgaria - FIXED VERSION
+            const updateTime = () => {
+                const now = new Date();
+                const options = { 
+                    timeZone: 'Europe/Sofia',
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false 
+                };
+                const bgTime = now.toLocaleTimeString('en-US', options);
+                document.getElementById('time-display').innerHTML = 
+                    `<i class="fas fa-clock"></i> Current time in Bulgaria: ${bgTime}`;
+            };
+            
+            updateTime();
+            setInterval(updateTime, 1000);
+        });
+    </script>
+</body>
+</html>
