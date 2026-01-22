@@ -139,7 +139,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Main content
-st.markdown('<h1 class="main-header">Bulgarian Language Learning Lab</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="main-header">Bulgarski Ezik Learning Lab</h1>', unsafe_allow_html=True)
 st.markdown('<p class="sub-header">Master Bulgarian with Interactive Learning</p>', unsafe_allow_html=True)
 st.markdown('<p class="welcome-text">Добре дошли в Лабораторията за български език!</p>', unsafe_allow_html=True)
 
@@ -252,6 +252,7 @@ with st.sidebar:
     All feedback is welcome!
 
     """)
+
 
 
 
