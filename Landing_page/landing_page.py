@@ -174,24 +174,19 @@ features_html = """
     <div class="feature-card">
         <span class="feature-icon">🎯</span>
         <h4>Interactive Lessons</h4>
-        <p>Learn with engaging multimedia content and real-life dialogues tailored to your level.</p>
+        <p>Learn with engaging multimedia content and dialogues tailored to your level.</p>
     </div>
     <div class="feature-card">
         <span class="feature-icon">🎤</span>
         <h4>Pronunciation Practice</h4>
-        <p>Improve your accent with audio exercises and voice recognition technology.</p>
+        <p>Improve your pronouncation by listening to words and phrases read out to you.</p>
     </div>
     <div class="feature-card">
         <span class="feature-icon">📊</span>
         <h4>Progress Tracking</h4>
-        <p>Monitor your improvement with detailed analytics, reports, and achievement badges.</p>
+        <p>Monitor your improvement with detailed analytics, reports.</p>
     </div>
-    <div class="feature-card">
-        <span class="feature-icon">🏆</span>
-        <h4>Gamified Learning</h4>
-        <p>Earn badges, compete in challenges, and stay motivated with our reward system.</p>
-    </div>
-</div>
+    
 """
 
 st.markdown(features_html, unsafe_allow_html=True)
@@ -260,6 +255,7 @@ with st.sidebar:
     All feedback is welcome!
 
     """)
+
 
 
 
