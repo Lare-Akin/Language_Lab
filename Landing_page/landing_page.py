@@ -211,21 +211,18 @@ with st.expander("🚀 Getting Started", expanded=False):
     st.markdown("""
     ### For Students:
     1. Click **"Enter as Student"** above
-    2. Login with demo credentials or register new account
+    2. Login or register new account
     3. Start with "Word Practice" to build vocabulary
     4. Take quizzes to test your knowledge
     5. Track your progress in the "My Progress" section
     
     ### For Teachers:
     1. Click **"Enter as Teacher"** above  
-    2. Login with admin credentials (default: admin/admin123)
+    2. Login with admin credentials
     3. Explore content management in "Manage Content"
     4. Add students in "Student Management"
     5. Monitor progress in "Student Progress Dashboard"
     
-    ### Demo Accounts:
-    - **Student**: username: `demo`, password: `demopass`
-    - **Teacher**: username: `admin`, password: `admin123`
     """)
 
 # Footer
@@ -255,6 +252,7 @@ with st.sidebar:
     All feedback is welcome!
 
     """)
+
 
 
 
