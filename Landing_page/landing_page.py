@@ -5,9 +5,13 @@ st.set_page_config(
     page_title="Laré BG Language Lab",
     page_icon="🇧🇬",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="collapsed",
+    menu_items={
+        'Get Help': None,      # Hides "Get Help" menu
+        'Report a bug': None,  # Hides "Report a bug" menu  
+        'About': None         # Hides "About" menu
+    }
 )
-
 # Custom CSS for styling
 st.markdown("""
 <style>
@@ -254,4 +258,5 @@ with st.sidebar:
     - User experience evaluation
     
     All feedback is welcome!
+
     """)
