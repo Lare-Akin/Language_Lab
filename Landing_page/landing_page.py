@@ -152,7 +152,7 @@ with col1:
     st.markdown("""
     <div class="card">
         <h3>👨‍🎓 Student Portal</h3>
-        <p>Access interactive learning modules, practice vocabulary, take quizzes, track your progress, and master Bulgarian at your own pace.</p>
+        <p>Access interactive learning modules, practice vocabulary, take quizzes, track your progress, and improve at your own pace.</p>
         <a href="https://lare-akin-language-lab-appsstudent-appstudent-app-lkys47.streamlit.app" target="_blank" class="card-link">🎯 Enter as Student</a>
     </div>
     """, unsafe_allow_html=True)
@@ -260,3 +260,4 @@ with st.sidebar:
     All feedback is welcome!
 
     """)
+
