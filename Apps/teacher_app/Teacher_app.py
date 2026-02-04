@@ -17,7 +17,8 @@ from typing import List, Dict, Tuple, Optional
 # CONFIG & PATHS (SHARED)
 # =========================================
 
-DATA_DIR = Path(__file__).parents[2] / "data"
+BASE_DIR = Path(__file__).parent.resolve()
+DATA_DIR = BASE_DIR / "data"
 
 LEARNING_DB_PATH = DATA_DIR / "Learning_Resource_Database.csv"
 USER_PROFILES_PATH = DATA_DIR / "user_profiles.json"
@@ -42,7 +43,7 @@ def init_session_state():
         "learning_profile": {},
         
         # Navigation
-        "current_section": "practice_words",
+        "current_section": "my_progress",  # Changed default to my_progress
         "sidebar_collapsed": False,
         
         # Content editing
@@ -52,7 +53,7 @@ def init_session_state():
         # Student progress view
         "selected_student": None,
         
-        # Quiz states
+        # Quiz states (removed since we're removing quizzes)
         "quiz_started": False,
         "quiz_score": 0,
         "quiz_total": 0,
@@ -62,19 +63,16 @@ def init_session_state():
         "quiz_content_type": None,
         "quiz_start_time": None,
         
-        # Practice states
+        # Practice states (removed since we're removing practice)
         "practice_mode": False,
         "practice_index": 0,
         "practice_items": [],
         
-        # Dialog practice
+        # Dialog practice (removed since we're removing practice)
         "dialog_mode": False,
         "dialog_lines": [],
         "dialog_current": 0,
         "dialog_showing_answer": False,
-        
-        # Current category filter
-        "current_category": "All"
     }
     
     for key, value in defaults.items():
@@ -496,7 +494,7 @@ def logout_button():
     if st.session_state.logged_in:
         if st.sidebar.button("🚪 Logout"):
             # Reset all state but keep current_section to avoid crash
-            current_section = st.session_state.get("current_section", "practice_words")
+            current_section = st.session_state.get("current_section", "my_progress")
             st.session_state.clear()
             init_session_state()
             st.session_state.current_section = current_section
@@ -657,752 +655,6 @@ def clean_dialogue_text(text: str) -> str:
         return text
     cleaned = re.sub(r"^\s*[\wА-Яа-я]+:\s*", "", text)
     return cleaned.strip() or text
-
-# =========================================
-# PRACTICE SECTIONS (SINGLE ITEM DISPLAY)
-# =========================================
-
-def display_single_item(item, item_type="Word"):
-    """Display a single learning item in the clean format from the image."""
-    
-    # Title based on item type
-    if item_type == "Word":
-        st.markdown("### Bulgarian Words")
-    elif item_type == "Phrase":
-        st.markdown("### Bulgarian Phrases")
-    elif item_type == "Conversation":
-        st.markdown("### Bulgarian Conversations")
-    elif item_type == "Dialogue":
-        st.markdown("### Bulgarian Dialogues")
-    
-    # Bulgarian text
-    st.markdown("---")
-    st.markdown("##### BG Bulgarian:")
-    st.markdown(f"**{item['Bulgarian']}**")
-    
-    # Audio player
-    audio_path = tts_audio(item['Bulgarian'])
-    if audio_path:
-        with open(audio_path, 'rb') as f:
-            audio_bytes = f.read()
-        st.audio(audio_bytes, format='audio/mp3')
-    
-    # Pronunciation
-    if pd.notna(item.get('Pronunciation')) and str(item['Pronunciation']).strip():
-        st.markdown(f"**Pronunciation:**  \n{item['Pronunciation']}")
-    
-    # English translation
-    st.markdown("---")
-    st.markdown(f"**English:**  \n{item['English']}")
-    
-    # Grammar notes
-    if pd.notna(item.get('Grammar_Notes')) and str(item['Grammar_Notes']).strip():
-        st.markdown("---")
-        st.markdown(f"**Notes:**  \n{item['Grammar_Notes']}")
-
-def practice_words_section():
-    """Word practice section - single item display like in the image."""
-    
-    if df_words.empty:
-        st.info("No words available. Add some content first!")
-        return
-    
-    # Welcome header
-    st.markdown(f"# Welcome → Добре дошли, {st.session_state.current_user}!")
-    
-    # Category filter
-    categories = ["All"] + df_words["Category"].unique().tolist()
-    selected_category = st.selectbox("**Select Category:**", categories)
-    
-    # Filter words
-    display_words = df_words.copy()
-    if selected_category != "All":
-        display_words = display_words[display_words["Category"] == selected_category]
-    
-    if display_words.empty:
-        st.info("No words in selected category.")
-        return
-    
-    # Initialize practice state if needed
-    if (not st.session_state.practice_mode or 
-        st.session_state.current_category != selected_category or
-        len(st.session_state.practice_items) != len(display_words)):
-        st.session_state.practice_mode = True
-        st.session_state.practice_items = display_words.to_dict('records')
-        st.session_state.practice_index = 0
-        st.session_state.current_category = selected_category
-    
-    # Get current item
-    item = st.session_state.practice_items[st.session_state.practice_index]
-    
-    # Display single item
-    display_single_item(item, "Word")
-    
-    # Navigation controls
-    st.markdown("---")
-    
-    # Progress indicator
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col1:
-        if st.button("⏮️ Previous", disabled=st.session_state.practice_index == 0, 
-                    use_container_width=True):
-            st.session_state.practice_index -= 1
-            st.rerun()
-    
-    with col2:
-        st.markdown(f"<p style='text-align: center; font-weight: bold;'>{st.session_state.practice_index + 1} / {len(st.session_state.practice_items)}</p>", 
-                   unsafe_allow_html=True)
-    
-    with col3:
-        if st.button("Next ⏭️", disabled=st.session_state.practice_index >= len(st.session_state.practice_items) - 1,
-                    use_container_width=True):
-            st.session_state.practice_index += 1
-            st.rerun()
-
-def practice_phrases_section():
-    """Phrase practice section - single item display."""
-    
-    if df_phrases.empty:
-        st.info("No phrases available. Add some content first!")
-        return
-    
-    # Welcome header
-    st.markdown(f"# Welcome → Добре дошли, {st.session_state.current_user}!")
-    
-    # Category filter
-    categories = ["All"] + df_phrases["Category"].unique().tolist()
-    selected_category = st.selectbox("**Select Category:**", categories, key="phrase_cat")
-    
-    # Filter phrases
-    display_phrases = df_phrases.copy()
-    if selected_category != "All":
-        display_phrases = display_phrases[display_phrases["Category"] == selected_category]
-    
-    if display_phrases.empty:
-        st.info("No phrases in selected category.")
-        return
-    
-    # Initialize practice state if needed
-    if (not st.session_state.practice_mode or 
-        st.session_state.current_category != selected_category or
-        len(st.session_state.practice_items) != len(display_phrases)):
-        st.session_state.practice_mode = True
-        st.session_state.practice_items = display_phrases.to_dict('records')
-        st.session_state.practice_index = 0
-        st.session_state.current_category = selected_category
-    
-    # Get current item
-    item = st.session_state.practice_items[st.session_state.practice_index]
-    
-    # Display single item
-    display_single_item(item, "Phrase")
-    
-    # Navigation controls
-    st.markdown("---")
-    
-    # Progress indicator
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col1:
-        if st.button("⏮️ Previous", disabled=st.session_state.practice_index == 0, 
-                    use_container_width=True, key="phrase_prev"):
-            st.session_state.practice_index -= 1
-            st.rerun()
-    
-    with col2:
-        st.markdown(f"<p style='text-align: center; font-weight: bold;'>{st.session_state.practice_index + 1} / {len(st.session_state.practice_items)}</p>", 
-                   unsafe_allow_html=True)
-    
-    with col3:
-        if st.button("Next ⏭️", disabled=st.session_state.practice_index >= len(st.session_state.practice_items) - 1,
-                    use_container_width=True, key="phrase_next"):
-            st.session_state.practice_index += 1
-            st.rerun()
-
-def practice_conversations_section():
-    """Conversation practice section - single item display."""
-    
-    if df_convo.empty:
-        st.info("No conversations available. Add some content first!")
-        return
-    
-    # Welcome header
-    st.markdown(f"# Welcome → Добре дошли, {st.session_state.current_user}!")
-    
-    # Category filter
-    categories = ["All"] + df_convo["Category"].unique().tolist()
-    selected_category = st.selectbox("**Select Category:**", categories, key="convo_cat")
-    
-    # Filter conversations
-    display_convo = df_convo.copy()
-    if selected_category != "All":
-        display_convo = display_convo[display_convo["Category"] == selected_category]
-    
-    if display_convo.empty:
-        st.info("No conversations in selected category.")
-        return
-    
-    # Initialize practice state if needed
-    if (not st.session_state.practice_mode or 
-        st.session_state.current_category != selected_category or
-        len(st.session_state.practice_items) != len(display_convo)):
-        st.session_state.practice_mode = True
-        st.session_state.practice_items = display_convo.to_dict('records')
-        st.session_state.practice_index = 0
-        st.session_state.current_category = selected_category
-    
-    # Get current item
-    item = st.session_state.practice_items[st.session_state.practice_index]
-    
-    # Display single item
-    st.markdown("### Bulgarian Conversations")
-    st.markdown("---")
-    
-    # Display conversation
-    st.markdown(f"**{item['Bulgarian']}**")
-    
-    # Audio player
-    audio_path = tts_audio(item['Bulgarian'])
-    if audio_path:
-        with open(audio_path, 'rb') as f:
-            audio_bytes = f.read()
-        st.audio(audio_bytes, format='audio/mp3')
-    
-    # Pronunciation
-    if pd.notna(item.get('Pronunciation')) and str(item['Pronunciation']).strip():
-        st.markdown(f"**Pronunciation:**  \n{item['Pronunciation']}")
-    
-    # English translation
-    st.markdown("---")
-    st.markdown(f"**English:**  \n{item['English']}")
-    
-    # Grammar notes
-    if pd.notna(item.get('Grammar_Notes')) and str(item['Grammar_Notes']).strip():
-        st.markdown("---")
-        st.markdown(f"**Notes:**  \n{item['Grammar_Notes']}")
-    
-    # Navigation controls
-    st.markdown("---")
-    
-    # Progress indicator
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col1:
-        if st.button("⏮️ Previous", disabled=st.session_state.practice_index == 0, 
-                    use_container_width=True, key="convo_prev"):
-            st.session_state.practice_index -= 1
-            st.rerun()
-    
-    with col2:
-        st.markdown(f"<p style='text-align: center; font-weight: bold;'>{st.session_state.practice_index + 1} / {len(st.session_state.practice_items)}</p>", 
-                   unsafe_allow_html=True)
-    
-    with col3:
-        if st.button("Next ⏭️", disabled=st.session_state.practice_index >= len(st.session_state.practice_items) - 1,
-                    use_container_width=True, key="convo_next"):
-            st.session_state.practice_index += 1
-            st.rerun()
-
-def practice_dialogues_section():
-    """Dialogue practice section - single item display."""
-    
-    if df_dialogues.empty:
-        st.info("No dialogues available. Add some content first!")
-        return
-    
-    # Welcome header
-    st.markdown(f"# Welcome → Добре дошли, {st.session_state.current_user}!")
-    
-    # Category filter
-    categories = ["All"] + df_dialogues["Category"].unique().tolist()
-    selected_category = st.selectbox("**Select Category:**", categories, key="dialog_cat")
-    
-    # Filter dialogues
-    display_dialogues = df_dialogues.copy()
-    if selected_category != "All":
-        display_dialogues = display_dialogues[display_dialogues["Category"] == selected_category]
-    
-    if display_dialogues.empty:
-        st.info("No dialogues in selected category.")
-        return
-    
-    # Initialize practice state if needed
-    if (not st.session_state.practice_mode or 
-        st.session_state.current_category != selected_category or
-        len(st.session_state.practice_items) != len(display_dialogues)):
-        st.session_state.practice_mode = True
-        st.session_state.practice_items = display_dialogues.to_dict('records')
-        st.session_state.practice_index = 0
-        st.session_state.current_category = selected_category
-    
-    # Get current item
-    item = st.session_state.practice_items[st.session_state.practice_index]
-    
-    # Display single item
-    st.markdown("### Bulgarian Dialogues")
-    st.markdown("---")
-    
-    # Split dialogue into lines if there are line breaks
-    bg_text = item['Bulgarian']
-    en_text = item['English']
-    
-    # Check if it's a multi-line dialogue
-    if '\n' in bg_text:
-        bg_lines = bg_text.split('\n')
-        en_lines = en_text.split('\n') if '\n' in en_text else [en_text] * len(bg_lines)
-        
-        for i, (bg_line, en_line) in enumerate(zip(bg_lines, en_lines)):
-            with st.expander(f"Line {i+1}", expanded=i==0):
-                st.markdown(f"**Bulgarian:**  \n{bg_line}")
-                st.markdown(f"**English:**  \n{en_line}")
-                
-                # Audio for each line
-                line_audio = tts_audio(clean_dialogue_text(bg_line))
-                if line_audio:
-                    with open(line_audio, 'rb') as f:
-                        audio_bytes = f.read()
-                    st.audio(audio_bytes, format='audio/mp3')
-    else:
-        # Single line dialogue
-        st.markdown(f"**Bulgarian:**  \n{item['Bulgarian']}")
-        
-        # Audio player
-        audio_path = tts_audio(item['Bulgarian'])
-        if audio_path:
-            with open(audio_path, 'rb') as f:
-                audio_bytes = f.read()
-            st.audio(audio_bytes, format='audio/mp3')
-        
-        # Pronunciation
-        if pd.notna(item.get('Pronunciation')) and str(item['Pronunciation']).strip():
-            st.markdown(f"**Pronunciation:**  \n{item['Pronunciation']}")
-        
-        # English translation
-        st.markdown("---")
-        st.markdown(f"**English:**  \n{item['English']}")
-    
-    # Grammar notes
-    if pd.notna(item.get('Grammar_Notes')) and str(item['Grammar_Notes']).strip():
-        st.markdown("---")
-        st.markdown(f"**Notes:**  \n{item['Grammar_Notes']}")
-    
-    # Navigation controls
-    st.markdown("---")
-    
-    # Progress indicator
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col1:
-        if st.button("⏮️ Previous", disabled=st.session_state.practice_index == 0, 
-                    use_container_width=True, key="dialog_prev"):
-            st.session_state.practice_index -= 1
-            st.rerun()
-    
-    with col2:
-        st.markdown(f"<p style='text-align: center; font-weight: bold;'>{st.session_state.practice_index + 1} / {len(st.session_state.practice_items)}</p>", 
-                   unsafe_allow_html=True)
-    
-    with col3:
-        if st.button("Next ⏭️", disabled=st.session_state.practice_index >= len(st.session_state.practice_items) - 1,
-                    use_container_width=True, key="dialog_next"):
-            st.session_state.practice_index += 1
-            st.rerun()
-
-# =========================================
-# QUIZ SECTIONS (TEACHER CAN USE LIKE STUDENT)
-# =========================================
-
-def start_word_quiz():
-    """Start a word quiz for teachers."""
-    if df_words.empty:
-        st.error("No words available for quiz.")
-        return False
-    
-    # Quiz options
-    col1, col2 = st.columns(2)
-    with col1:
-        num_questions = st.slider("Number of questions:", 5, 20, 10)
-    with col2:
-        categories = ["All"] + df_words["Category"].unique().tolist()
-        selected_category = st.selectbox("Category:", categories, key="quiz_cat")
-    
-    # Filter words
-    quiz_words = df_words.copy()
-    if selected_category != "All":
-        quiz_words = quiz_words[quiz_words["Category"] == selected_category]
-    
-    if len(quiz_words) < num_questions:
-        st.warning(f"Only {len(quiz_words)} words available in this category.")
-        num_questions = min(num_questions, len(quiz_words))
-    
-    if num_questions == 0:
-        st.error("No words available for quiz.")
-        return False
-    
-    # Start quiz
-    if st.button("Start Quiz", type="primary", use_container_width=True):
-        # Select random words
-        quiz_words = quiz_words.sample(n=min(num_questions, len(quiz_words)))
-        
-        # Generate questions
-        questions = []
-        for _, row in quiz_words.iterrows():
-            # Create multiple choice options
-            correct_answer = row['English']
-            
-            # Get wrong answers from other words
-            wrong_options = df_words[df_words['English'] != correct_answer]['English'].sample(n=3).tolist()
-            
-            # Ensure we have exactly 3 wrong options
-            while len(wrong_options) < 3:
-                wrong_options.append("Unknown word")
-            
-            options = [correct_answer] + wrong_options
-            random.shuffle(options)
-            
-            questions.append({
-                'question': f"What is the English translation of '{row['Bulgarian']}'?",
-                'options': options,
-                'correct': correct_answer,
-                'bulgarian': row['Bulgarian'],
-                'pronunciation': row.get('Pronunciation', ''),
-                'notes': row.get('Grammar_Notes', ''),
-                'category': row['Category']
-            })
-        
-        # Initialize quiz state
-        st.session_state.quiz_started = True
-        st.session_state.quiz_score = 0
-        st.session_state.quiz_total = len(questions)
-        st.session_state.quiz_questions = questions
-        st.session_state.quiz_current_index = 0
-        st.session_state.quiz_answers = []
-        st.session_state.quiz_content_type = "words"
-        st.session_state.quiz_start_time = time.time()
-        st.rerun()
-    
-    return True
-
-def start_phrase_quiz():
-    """Start a phrase quiz for teachers."""
-    if df_phrases.empty:
-        st.error("No phrases available for quiz.")
-        return False
-    
-    # Quiz options
-    col1, col2 = st.columns(2)
-    with col1:
-        num_questions = st.slider("Number of questions:", 5, 20, 10, key="phrase_quiz_num")
-    with col2:
-        categories = ["All"] + df_phrases["Category"].unique().tolist()
-        selected_category = st.selectbox("Category:", categories, key="phrase_quiz_cat")
-    
-    # Filter phrases
-    quiz_phrases = df_phrases.copy()
-    if selected_category != "All":
-        quiz_phrases = quiz_phrases[quiz_phrases["Category"] == selected_category]
-    
-    if len(quiz_phrases) < num_questions:
-        st.warning(f"Only {len(quiz_phrases)} phrases available in this category.")
-        num_questions = min(num_questions, len(quiz_phrases))
-    
-    if num_questions == 0:
-        st.error("No phrases available for quiz.")
-        return False
-    
-    # Start quiz
-    if st.button("Start Quiz", type="primary", use_container_width=True, key="start_phrase_quiz"):
-        # Select random phrases
-        quiz_phrases = quiz_phrases.sample(n=min(num_questions, len(quiz_phrases)))
-        
-        # Generate questions
-        questions = []
-        for _, row in quiz_phrases.iterrows():
-            # Create multiple choice options
-            correct_answer = row['English']
-            
-            # Get wrong answers from other phrases
-            wrong_options = df_phrases[df_phrases['English'] != correct_answer]['English'].sample(n=3).tolist()
-            
-            # Ensure we have exactly 3 wrong options
-            while len(wrong_options) < 3:
-                wrong_options.append("Unknown phrase")
-            
-            options = [correct_answer] + wrong_options
-            random.shuffle(options)
-            
-            questions.append({
-                'question': f"What is the English translation of '{row['Bulgarian']}'?",
-                'options': options,
-                'correct': correct_answer,
-                'bulgarian': row['Bulgarian'],
-                'pronunciation': row.get('Pronunciation', ''),
-                'notes': row.get('Grammar_Notes', ''),
-                'category': row['Category']
-            })
-        
-        # Initialize quiz state
-        st.session_state.quiz_started = True
-        st.session_state.quiz_score = 0
-        st.session_state.quiz_total = len(questions)
-        st.session_state.quiz_questions = questions
-        st.session_state.quiz_current_index = 0
-        st.session_state.quiz_answers = []
-        st.session_state.quiz_content_type = "phrases"
-        st.session_state.quiz_start_time = time.time()
-        st.rerun()
-    
-    return True
-
-def display_quiz_question():
-    """Display current quiz question."""
-    if not st.session_state.quiz_questions or st.session_state.quiz_current_index >= len(st.session_state.quiz_questions):
-        return
-    
-    question = st.session_state.quiz_questions[st.session_state.quiz_current_index]
-    
-    st.subheader(f"Question {st.session_state.quiz_current_index + 1} of {st.session_state.quiz_total}")
-    
-    # Display question
-    st.markdown(f"### {question['question']}")
-    
-    if question.get('bulgarian'):
-        st.info(f"**Bulgarian:** {question['bulgarian']}")
-        
-        # Audio for Bulgarian text
-        audio_path = tts_audio(question['bulgarian'])
-        if audio_path:
-            with open(audio_path, 'rb') as f:
-                audio_bytes = f.read()
-            st.audio(audio_bytes, format='audio/mp3')
-    
-    # Display multiple choice options
-    selected_option = st.radio(
-        "Select your answer:",
-        question['options'],
-        key=f"quiz_option_{st.session_state.quiz_current_index}"
-    )
-    
-    # Submit button
-    if st.button("Submit Answer", type="primary", use_container_width=True):
-        # Check answer
-        is_correct = (selected_option == question['correct'])
-        
-        # Store answer
-        st.session_state.quiz_answers.append({
-            'question': question['question'],
-            'selected': selected_option,
-            'correct': question['correct'],
-            'is_correct': is_correct,
-            'bulgarian': question.get('bulgarian', ''),
-            'notes': question.get('notes', '')
-        })
-        
-        # Update score
-        if is_correct:
-            st.session_state.quiz_score += 1
-        
-        # Move to next question or show results
-        if st.session_state.quiz_current_index < len(st.session_state.quiz_questions) - 1:
-            st.session_state.quiz_current_index += 1
-            st.rerun()
-        else:
-            # Quiz completed - show results
-            st.session_state.quiz_started = False
-            show_quiz_results()
-
-def show_quiz_results():
-    """Display quiz results and record progress."""
-    st.balloons()
-    st.success("🎉 Quiz Completed!")
-    
-    # Calculate time spent
-    time_spent = int(time.time() - st.session_state.quiz_start_time) if st.session_state.quiz_start_time else 0
-    
-    # Display score
-    score = st.session_state.quiz_score
-    total = st.session_state.quiz_total
-    accuracy = (score / total * 100) if total > 0 else 0
-    
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Score", f"{score}/{total}")
-    col2.metric("Accuracy", f"{accuracy:.1f}%")
-    col3.metric("Time", f"{time_spent}s")
-    
-    # Record progress
-    if st.session_state.logged_in:
-        success = record_quiz_result(
-            username=st.session_state.current_username,
-            quiz_type=f"{st.session_state.quiz_content_type}_quiz",
-            score=score,
-            total=total,
-            content_type=st.session_state.quiz_content_type,
-            time_spent=time_spent
-        )
-        if success:
-            st.info("✅ Progress saved!")
-    
-    # Show detailed results
-    st.markdown("---")
-    st.subheader("📋 Detailed Results")
-    
-    for i, answer in enumerate(st.session_state.quiz_answers):
-        with st.expander(f"Question {i+1}: {answer['question'][:50]}...", expanded=False):
-            col1, col2 = st.columns(2)
-            with col1:
-                st.write(f"**Your answer:** {answer['selected']}")
-                if answer['is_correct']:
-                    st.success("✅ Correct!")
-                else:
-                    st.error(f"❌ Correct answer: {answer['correct']}")
-            
-            with col2:
-                if answer['bulgarian']:
-                    st.write(f"**Bulgarian:** {answer['bulgarian']}")
-                if answer['notes']:
-                    st.write(f"**Notes:** {answer['notes']}")
-    
-    # Options after quiz
-    st.markdown("---")
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Take Another Quiz", use_container_width=True):
-            st.session_state.quiz_started = False
-            st.session_state.quiz_score = 0
-            st.session_state.quiz_total = 0
-            st.session_state.quiz_questions = []
-            st.session_state.quiz_current_index = 0
-            st.session_state.quiz_answers = []
-            st.rerun()
-    with col2:
-        if st.button("Back to Practice", use_container_width=True):
-            st.session_state.quiz_started = False
-            st.session_state.quiz_score = 0
-            st.session_state.quiz_total = 0
-            st.session_state.quiz_questions = []
-            st.session_state.quiz_current_index = 0
-            st.session_state.quiz_answers = []
-            st.rerun()
-
-def quiz_words_section():
-    """Word quiz section for teachers."""
-    st.header("📝 Word Quiz")
-    
-    if not st.session_state.quiz_started:
-        start_word_quiz()
-    else:
-        display_quiz_question()
-
-def quiz_phrases_section():
-    """Phrase quiz section for teachers."""
-    st.header("💬 Phrase Quiz")
-    
-    if not st.session_state.quiz_started:
-        start_phrase_quiz()
-    else:
-        display_quiz_question()
-
-def quiz_dialogue_section():
-    """Dialogue quiz section for teachers."""
-    st.header("💭 Dialogue Quiz")
-    
-    if df_dialogues.empty:
-        st.info("No dialogues available for quiz.")
-        return
-    
-    st.info("Dialogue quiz feature coming soon!")
-    # TODO: Implement dialogue quiz logic
-    # This would involve matching dialogue lines, fill-in-the-blank, etc.
-
-def comprehensive_quiz_section():
-    """Comprehensive quiz section for teachers."""
-    st.header("📚 Comprehensive Quiz")
-    
-    # Combine all content
-    all_content = pd.concat([df_words, df_phrases, df_convo, df_dialogues], ignore_index=True)
-    
-    if all_content.empty:
-        st.info("No content available for quiz.")
-        return
-    
-    # Quiz options
-    col1, col2 = st.columns(2)
-    with col1:
-        num_questions = st.slider("Number of questions:", 10, 50, 20, key="comp_quiz_num")
-    with col2:
-        quiz_types = st.multiselect(
-            "Include content types:",
-            ["Words", "Phrases", "Conversations", "Dialogues"],
-            default=["Words", "Phrases"]
-        )
-    
-    if not quiz_types:
-        st.warning("Please select at least one content type.")
-        return
-    
-    # Filter content by selected types
-    type_map = {
-        "Words": "Bulgarian_reference",
-        "Phrases": "Bulgarian_Phrases",
-        "Conversations": "Learning_From_Human_Conversation",
-        "Dialogues": "Dialog"
-    }
-    
-    selected_classifications = [type_map[t] for t in quiz_types]
-    quiz_content = all_content[all_content["Classification"].isin(selected_classifications)]
-    
-    if len(quiz_content) < num_questions:
-        st.warning(f"Only {len(quiz_content)} items available.")
-        num_questions = min(num_questions, len(quiz_content))
-    
-    # Start quiz
-    if st.button("Start Comprehensive Quiz", type="primary", use_container_width=True):
-        # Select random items
-        quiz_items = quiz_content.sample(n=min(num_questions, len(quiz_content)))
-        
-        # Generate questions
-        questions = []
-        for _, row in quiz_items.iterrows():
-            # Create multiple choice options
-            correct_answer = row['English']
-            
-            # Get wrong answers from other items
-            wrong_options = all_content[all_content['English'] != correct_answer]['English'].sample(n=3).tolist()
-            
-            # Ensure we have exactly 3 wrong options
-            while len(wrong_options) < 3:
-                wrong_options.append("Unknown")
-            
-            options = [correct_answer] + wrong_options
-            random.shuffle(options)
-            
-            # Determine content type for tracking
-            content_type = "words"
-            if row["Classification"] == "Bulgarian_Phrases":
-                content_type = "phrases"
-            elif row["Classification"] == "Learning_From_Human_Conversation":
-                content_type = "conversations"
-            elif row["Classification"] == "Dialog":
-                content_type = "dialogues"
-            
-            questions.append({
-                'question': f"What is the English translation?",
-                'options': options,
-                'correct': correct_answer,
-                'bulgarian': row['Bulgarian'],
-                'pronunciation': row.get('Pronunciation', ''),
-                'notes': row.get('Grammar_Notes', ''),
-                'category': row['Category'],
-                'content_type': content_type
-            })
-        
-        # Initialize quiz state
-        st.session_state.quiz_started = True
-        st.session_state.quiz_score = 0
-        st.session_state.quiz_total = len(questions)
-        st.session_state.quiz_questions = questions
-        st.session_state.quiz_current_index = 0
-        st.session_state.quiz_answers = []
-        st.session_state.quiz_content_type = "comprehensive"
-        st.session_state.quiz_start_time = time.time()
-        st.rerun()
 
 # =========================================
 # TEACHER PROGRESS DASHBOARD
@@ -2512,66 +1764,19 @@ def main():
         initial_sidebar_state="expanded",
     )
     
-    # Clean CSS matching the image style
+    # CSS
     st.markdown(
         """
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
         * { font-family: 'Roboto', 'Arial', 'Helvetica', sans-serif; }
-        .main-header { 
-            font-size: 32px; 
-            font-weight: 700; 
-            margin-bottom: 0.5rem;
-            color: #1E3A8A;
-        }
-        .section-header {
-            font-size: 24px;
-            font-weight: 600;
-            color: #1E3A8A;
-            margin-top: 1rem;
-            margin-bottom: 1rem;
-        }
-        .content-card {
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 10px 0;
-            border-left: 5px solid #1E3A8A;
-        }
-        .nav-button {
-            width: 100%;
-            margin: 5px 0;
-            text-align: left;
-            padding: 10px 15px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            background-color: white;
-            transition: all 0.3s;
-        }
-        .nav-button:hover {
-            background-color: #f0f8ff;
-            border-color: #1E3A8A;
-        }
-        .stButton > button {
-            border-radius: 8px;
-            padding: 10px 24px;
-            font-weight: 500;
-        }
-        .stButton > button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        .footer {
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-            padding: 20px 0;
-            margin-top: 40px;
-            border-top: 1px solid #eee;
-        }
+        .main-header { font-size: 32px; font-weight: 700; margin-bottom: 0.5rem; }
+        .block-container { padding-top: 1rem; padding-bottom: 1rem; }
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        .stButton > button { width: 100%; }
         @media (max-width: 768px) {
-            .main-header { font-size: 24px; }
-            .section-header { font-size: 20px; }
+            .stButton > button { width: 100%; }
         }
         </style>
         """,
@@ -2579,7 +1784,7 @@ def main():
     )
     
     if "current_section" not in st.session_state:
-        st.session_state.current_section = "practice_words"
+        st.session_state.current_section = "my_progress"
     
     if not st.session_state.logged_in:
         st.markdown('<h1 class="main-header">Laré BG Language Lab - Teacher</h1>', unsafe_allow_html=True)
@@ -2589,8 +1794,6 @@ def main():
             st.markdown(
                 """
                 **Features for Teachers/Administrators:**
-                - 📝 **Practice Words/Phrases/Dialogues**: Full learning access like students
-                - 📝 **Take Quizzes**: Word, phrase, dialogue, and comprehensive quizzes
                 - 📈 **Track Progress**: Your own learning analytics and progress timeline
                 - 👨‍💼 **Content Management**: Add, edit, and delete learning content
                 - 👥 **Student Management**: View, add, and manage student accounts
@@ -2601,23 +1804,25 @@ def main():
                 **Get Started:**
                 1. Login with admin credentials (default: admin/admin123)
                 2. Use the sidebar to navigate different sections
-                3. Practice, take quizzes, and monitor progress
+                3. Monitor progress and manage content
                 
-                **Note:** This app gives teachers ALL student features plus admin tools.
+                **Note:** This app is specifically designed for teacher/administrator management tasks.
                 """
             )
         st.stop()
     
-    # Main content with clean header
     st.markdown(
-        f'<h1 class="main-header">Welcome → Добре дошли, {st.session_state.current_user}!</h1>',
+        f'<h1 class="main-header">Teacher Dashboard → {st.session_state.current_user}</h1>',
         unsafe_allow_html=True,
     )
     
     # Sidebar toggle
-    if st.sidebar.button("☰ Menu", key="sidebar_toggle"):
-        st.session_state.sidebar_collapsed = not st.session_state.sidebar_collapsed
-        st.rerun()
+    col_toggle, _ = st.columns([1, 20])
+    with col_toggle:
+        icon = "📂" if st.session_state.sidebar_collapsed else "📁"
+        if st.button(icon, key="sidebar_toggle"):
+            st.session_state.sidebar_collapsed = not st.session_state.sidebar_collapsed
+            st.rerun()
     
     if not st.session_state.sidebar_collapsed:
         with st.sidebar:
@@ -2625,38 +1830,11 @@ def main():
             logout_button()
             
             st.sidebar.markdown("---")
-            st.sidebar.markdown("### 📱 Navigation")
             
-            # Learning sections
-            st.sidebar.markdown("#### 🎓 Learning")
-            learning_nav = [
-                ("📝 Words", "practice_words"),
-                ("💬 Phrases", "practice_phrases"),
-                ("🗣️ Conversations", "practice_conversations"),
-                ("💭 Dialogues", "practice_dialogues"),
-            ]
-            
-            for label, key in learning_nav:
-                if st.sidebar.button(label, key=f"learn_{key}", use_container_width=True):
-                    st.session_state.current_section = key
-                    st.rerun()
-            
-            st.sidebar.markdown("#### 📝 Quizzes")
-            quiz_nav = [
-                ("📝 Word Quiz", "quiz_words"),
-                ("💬 Phrase Quiz", "quiz_phrases"),
-                ("💭 Dialogue Quiz", "quiz_dialogue"),
-                ("📚 Comprehensive Quiz", "quiz_comprehensive"),
-            ]
-            
-            for label, key in quiz_nav:
-                if st.sidebar.button(label, key=f"quiz_{key}", use_container_width=True):
-                    st.session_state.current_section = key
-                    st.rerun()
-            
-            st.sidebar.markdown("#### 📊 Progress & Admin")
+            # Only show Progress & Admin sections
+            st.sidebar.markdown("#### 📊 Admin & Progress")
             admin_nav = [
-                ("📈 My Progress", "my_progress"),
+    
                 ("👨‍💼 Manage Content", "manage_content"),
                 ("👥 Student Management", "student_management"),
                 ("📈 Student Progress", "student_progress"),
@@ -2668,34 +1846,10 @@ def main():
                     st.session_state.current_section = key
                     st.rerun()
     
-    # Handle quiz state
-    if st.session_state.quiz_started and section not in ["quiz_words", "quiz_phrases", "quiz_dialogue", "quiz_comprehensive"]:
-        # If user navigates away during quiz, show warning
-        st.warning("⚠️ You have an active quiz!")
-        if st.button("Return to Quiz", type="primary"):
-            st.session_state.current_section = "quiz_words" if st.session_state.quiz_content_type == "words" else "quiz_phrases" if st.session_state.quiz_content_type == "phrases" else "quiz_comprehensive"
-            st.rerun()
-    
-    # Route to appropriate section
     section = st.session_state.current_section
     
-    if section == "practice_words":
-        practice_words_section()
-    elif section == "practice_phrases":
-        practice_phrases_section()
-    elif section == "practice_conversations":
-        practice_conversations_section()
-    elif section == "practice_dialogues":
-        practice_dialogues_section()
-    elif section == "quiz_words":
-        quiz_words_section()
-    elif section == "quiz_phrases":
-        quiz_phrases_section()
-    elif section == "quiz_dialogue":
-        quiz_dialogue_section()
-    elif section == "quiz_comprehensive":
-        comprehensive_quiz_section()
-    elif section == "my_progress":
+    # Route to appropriate section
+    if section == "my_progress":
         teacher_progress_dashboard()
     elif section == "manage_content":
         admin_content_management()
@@ -2706,11 +1860,10 @@ def main():
     elif section == "database_stats":
         database_statistics_section()
     
-    # Footer matching the image style
     st.markdown("---")
     st.markdown(
         """
-        <div class="footer">
+        <div style="text-align: center; color: #666; font-size: 14px; padding: 20px 0;">
             Laré BG Language Lab • Teacher App • Administration Dashboard<br>
             Made with ❤️ by Laré Akin • Cyrillic Supported
         </div>
